@@ -1,0 +1,6 @@
+ansible==13.4.0
+ansible-lint
+yamllint
+netaddr
+paramiko
+molecule-plugins[docker]

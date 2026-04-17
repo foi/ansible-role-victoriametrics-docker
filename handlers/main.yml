@@ -1,0 +1,18 @@
+# code: language=ansible
+# vim: set filetype=yaml.ansible :
+---
+- name: "docker compose up"
+  community.docker.docker_compose_v2:
+    state: present
+    project_src: "{{ victoriametrics_docker_root_folder }}"
+
+- name: "docker compose restart victoriametrics"
+  community.docker.docker_compose_v2:
+    project_src: "{{ victoriametrics_docker_root_folder }}"
+    state: restarted
+    services:
+      - "{{ victoriametrics_docker_container_name }}"
+
+- name: "docker compose restart vmalert"
+  ansible.builtin.include_tasks:
+    file: restart_vmalert.yml

@@ -1,0 +1,27 @@
+---
+galaxy_info:
+  role_name: victoriametrics_docker
+  author: foi
+  description: victoriametrics docker ansible role
+  platforms:
+    - name: Fedora
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+
+  license: MIT
+
+  min_ansible_version: "2.16"
+
+  galaxy_tags:
+    - victoriametrics
+    - vmalert
+    - logging
+    - docker
+
+dependencies: []

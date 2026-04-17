@@ -1,43 +1,6 @@
-# ansible-role-victoriametrics-docker
-
-Ansible role for deploying victoriametrics (vmalert enabled by default but can be disabled) in docker container.
-
-<img src="https://github.com/foi/ansible-role-victoriametrics-docker/actions/workflows/ci.yml/badge.svg?branch=main">
-
-Compatibility
---------------
-
-python: 3.12, 3.13, 3.14
-ansible: 12, 13
-
-prerequisites
---------------
-
-docker and docker-compose should be installed.
-
-Features
---------------
-
-vmlalert will be graceful reloaded in case of rules changes.
-
-Install
---------------
-
-`ansible-galaxy role install foi.victoriametrics_docker`
-
-or add it in `requirements.yml`
-
-```
-roles:
-  - name: foi.victoriametrics_docker
-```
-
-and run `ansible-galaxy install -r requirements.yml`
-
-Role Variables
---------------
-role defaults:
-```yml
+# code: language=ansible
+# vim: set filetype=yaml.ansible :
+---
 victoriametrics_docker_version: 'v1.140.0'
 victoriametrics_docker_container_name: victoriametrics
 victoriametrics_docker_root_folder: "/opt/{{ victoriametrics_docker_container_name }}"
@@ -58,7 +21,6 @@ victoriametrics_docker_compose_volumes:
 victoriametrics_docker_compose_retention: 1y
 victoriametrics_docker_compose_commands:
   - "-retentionPeriod={{ victoriametrics_docker_compose_retention }}"
-# set it to false if you don't need vmalert
 victoriametrics_docker_vmalert_enabled: true
 victoriametrics_docker_vmalert_container_name: vmalert
 victoriametrics_docker_vmalert_version: "v1.140.0"
@@ -152,36 +114,3 @@ victoriametrics_docker_compose_template: |
   {% if victoriametrics_docker_compose_out_of_service_template is not none %}
   {{ victoriametrics_docker_compose_out_of_service_template | to_nice_yaml(indent=2) }}
   {% endif %}
-```
-
-Example Playbook
-----------------
-```yml
-# inventory
-[servers]
-victoriametrics
-# playbook.yml
-- hosts: servers
-  roles:
-    - role: foi.victoriametrics_docker
-# host_vars/victoriametrics.yml
-# if you do not need extra root directives in docker compose.yml
-victoriametrics_docker_compose_out_of_service_template: null
-# if you want to add some alert rules
-victoriametrics_docker_compose_vmalert_rules:
-  blackbox_exporter: |
-    groups:
-      - name: BlackboxExporter
-        rules:
-          - alert: BlackboxProbeFailed
-            expr: probe_success == 0
-            for: 0m
-            labels:
-              severity: critical
-            annotations:
-              summary: Blackbox probe failed
-```
-License
--------
-
-MIT

@@ -1,0 +1,31 @@
+# code: language=ansible
+# vim: set filetype=yaml.ansible :
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint: |
+  set -e
+  ansible-lint
+platforms:
+  - name: platform-${PYTHON_VERSION:-3.13}-${ANSIBLE_VERSION:-13}-${OS_VERSION:-debian13}
+    image: "geerlingguy/docker-${OS_VERSION:-debian13}-ansible"
+    command: /sbin/init
+    cgroupns_mode: host
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    privileged: true
+provisioner:
+  name: ansible
+  env:
+    ANSIBLE_PIPELINING: true
+  playbooks:
+    converge: ${MOLECULE_PLAYBOOK:-converge.yml}
+verifier:
+  name: ansible
+scenario:
+  name: default

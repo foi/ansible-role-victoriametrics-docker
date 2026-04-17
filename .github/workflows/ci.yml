@@ -1,0 +1,62 @@
+---
+name: CI
+'on': [push, pull_request]
+
+jobs:
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install test dependencies.
+        run: pip3 install yamllint
+
+      - name: Lint code.
+        run: |
+          yamllint .
+
+  molecule:
+    name: Molecule
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python:
+          - 3.14
+          - 3.13
+          - 3.12
+        ansible:
+          - 13
+          - 12
+        os:
+          - debian13
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install test dependencies.
+        run: pip3 install ansible>=${{ matrix.ansible }} molecule molecule-plugins[docker] docker
+
+      - name: Install rsync
+        run: sudo apt update -y && sudo apt install -y rsync
+
+      - name: Run Molecule tests.
+        run: molecule test
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+          PYTHON_VERSION: ${{ matrix.python }}
+          ANSIBLE_VERSION: ${{ matrix.ansible }}
+          OS_VERSION: ${{ matrix.os }}

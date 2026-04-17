@@ -1,0 +1,8 @@
+# code: language=ansible
+# vim: set filetype=yaml.ansible :
+---
+- name: Install
+  tags:
+    - victoriametrics-docker-install
+  ansible.builtin.import_tasks:
+    file: install.yml
