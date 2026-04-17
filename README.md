@@ -168,6 +168,7 @@ victoriametrics
 - hosts: servers
   roles:
     - role: foi.victoriametrics_docker
+  become: true
 # host_vars/victoriametrics.yml
 # if you do not need extra root directives in docker compose.yml
 victoriametrics_docker_compose_out_of_service_template: null
