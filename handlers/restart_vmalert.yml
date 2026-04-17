@@ -4,7 +4,7 @@
 - name: "validate vmalert configs"
   ansible.builtin.shell:
     cmd: |
-      docker exec -i {{ victoriametrics_docker_vmalert_container_name }} /vmalert-prod {% for cmd in victoriametrics_docker_compose_vmalert_commands %} {{ cmd }} {% endfor %} --dryRun
+      docker exec -i {{ victoriametrics_docker_compose_vmalert_container_name }} /vmalert-prod {% for cmd in victoriametrics_docker_compose_vmalert_commands %} {{ cmd }} {% endfor %} --dryRun
   register: vmalert_validate_result
   changed_when: false
   args:
@@ -12,7 +12,7 @@
 
 - name: "get vmalert container status"
   ansible.builtin.shell:
-    cmd: "set -o pipefail && docker ps | grep '{{ victoriametrics_docker_vmalert_container_name }}'"
+    cmd: "set -o pipefail && docker ps | grep '{{ victoriametrics_docker_compose_vmalert_container_name }}'"
   register: vmalert_container_result
   changed_when: false
   args:
@@ -31,9 +31,9 @@
 - name: "up vmalert"
   community.docker.docker_compose_v2:
     services:
-      - "{{ victoriametrics_docker_vmalert_container_name }}"
+      - "{{ victoriametrics_docker_compose_vmalert_container_name }}"
     state: present
-    project_src: "{{ victoriametrics_docker_root_folder }}"
+    project_src: "{{ victoriametrics_docker_compose_root_folder }}"
   when:
     - "'finished reading ' in vmalert_validate_result.stderr"
     - "'Up ' not in vmalert_container_result.stdout"
@@ -41,9 +41,9 @@
 - name: "restart vmalert-vl"
   community.docker.docker_compose_v2:
     services:
-      - "{{ victoriametrics_docker_vmalert_container_name }}"
+      - "{{ victoriametrics_docker_compose_vmalert_container_name }}"
     state: restarted
-    project_src: "{{ victoriametrics_docker_root_folder }}"
+    project_src: "{{ victoriametrics_docker_compose_root_folder }}"
   when:
     - "'finished reading ' in vmalert_validate_result.stdout"
     - "'Up ' not in vmalert_container_result.stdout"

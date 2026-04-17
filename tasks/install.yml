@@ -3,32 +3,41 @@
 ---
 - name: "create root dir"
   ansible.builtin.file:
-    path: "{{ victoriametrics_docker_root_folder }}"
-    mode: "{{ victoriametrics_docker_root_folder_mode }}"
-    owner: "{{ victoriametrics_docker_root_folder_owner }}"
-    group: "{{ victoriametrics_docker_root_folder_group }}"
+    path: "{{ victoriametrics_docker_compose_root_folder }}"
+    mode: "{{ victoriametrics_docker_compose_root_folder_mode }}"
+    owner: "{{ victoriametrics_docker_compose_root_folder_owner }}"
+    group: "{{ victoriametrics_docker_compose_root_folder_group }}"
     state: directory
 
 - name: "render compose.yml"
   ansible.builtin.copy:
     content: "{{ victoriametrics_docker_compose_template }}"
-    dest: "{{ victoriametrics_docker_root_folder }}/compose.yml"
+    dest: "{{ victoriametrics_docker_compose_root_folder }}/compose.yml"
     mode: '0644'
-    owner: "{{ victoriametrics_docker_root_folder_owner }}"
-    group: "{{ victoriametrics_docker_root_folder_group }}"
+    owner: "{{ victoriametrics_docker_compose_root_folder_owner }}"
+    group: "{{ victoriametrics_docker_compose_root_folder_group }}"
   notify:
     - "docker compose up"
     - "docker compose restart victoriametrics"
 
+- name: "render scrape config"
+  when:
+    - victoriametrics_docker_compose_scrape_config | length > 0
+  ansible.builtin.copy:
+    content: "{{ victoriametrics_docker_compose_scrape_config }}"
+    dest: "{{ victoriametrics_docker_compose_root_folder }}/scrape.yml"
+    mode: '0644'
+  notify: "docker compose restart victoriametrics"
+
 - name: "render vmalert rules"
   when:
-    - victoriametrics_docker_vmalert_enabled
+    - victoriametrics_docker_compose_vmalert_enabled
   block:
 
     - name: create rules dir
       ansible.builtin.file:
         path: "{{ victoriametrics_docker_compose_vmalert_rules_path }}"
-        mode: "{{ victoriametrics_docker_root_folder_mode }}"
+        mode: "{{ victoriametrics_docker_compose_root_folder_mode }}"
         state: directory
 
     - name: "cleanup configs"
@@ -40,13 +49,13 @@
           ansible.builtin.find:
             paths: "{{ victoriametrics_docker_compose_vmalert_rules_path }}"
             patterns: '*.yml'
-          register: victoriametrics_docker_vmalert_configs_for_deletion
+          register: victoriametrics_docker_compose_vmalert_configs_for_deletion
 
         - name: "delete configs"
           ansible.builtin.file:
             path: "{{ vmalert_rules_name.path }}"
             state: absent
-          loop: "{{ victoriametrics_docker_vmalert_configs_for_deletion.files }}"
+          loop: "{{ victoriametrics_docker_compose_vmalert_configs_for_deletion.files }}"
           loop_control:
             loop_var: vmalert_rules_name
 

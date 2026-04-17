@@ -1,13 +1,14 @@
 # code: language=ansible
 # vim: set filetype=yaml.ansible :
 ---
-victoriametrics_docker_version: 'v1.140.0'
-victoriametrics_docker_container_name: victoriametrics
-victoriametrics_docker_root_folder: "/opt/{{ victoriametrics_docker_container_name }}"
-victoriametrics_docker_root_folder_owner: root
-victoriametrics_docker_root_folder_group: root
-victoriametrics_docker_root_folder_mode: '0750'
-victoriametrics_docker_image: victoriametrics/victoria-metrics
+victoriametrics_docker_compose_version: 'v1.140.0'
+victoriametrics_docker_compose_container_name: victoriametrics
+victoriametrics_docker_compose_root_folder: "/opt/{{ victoriametrics_docker_compose_container_name }}"
+victoriametrics_docker_compose_root_folder_owner: root
+victoriametrics_docker_compose_root_folder_group: root
+victoriametrics_docker_compose_root_folder_mode: '0750'
+victoriametrics_docker_compose_image: victoriametrics/victoria-metrics
+victoriametrics_docker_compose_scrape_config: ""
 victoriametrics_docker_compose_service_params:
   restart: unless-stopped
 victoriametrics_docker_compose_environment_params: {}
@@ -21,26 +22,26 @@ victoriametrics_docker_compose_volumes:
 victoriametrics_docker_compose_retention: 1y
 victoriametrics_docker_compose_commands:
   - "-retentionPeriod={{ victoriametrics_docker_compose_retention }}"
-victoriametrics_docker_vmalert_enabled: true
-victoriametrics_docker_vmalert_container_name: vmalert
-victoriametrics_docker_vmalert_version: "v1.140.0"
-victoriametrics_docker_vmalert_image: victoriametrics/vmalert
+victoriametrics_docker_compose_vmalert_enabled: true
+victoriametrics_docker_compose_vmalert_container_name: vmalert
+victoriametrics_docker_compose_vmalert_version: "v1.140.0"
+victoriametrics_docker_compose_vmalert_image: victoriametrics/vmalert
 # vmalert rules {{  }} braces should be written as [[ ]] because {{  }} is reserved for jinja
 # templating
-# for cleanup vmalert rules you can set victoriametrics_DOCKER_VMALERT_CLEANUP_CONFIGS=1 environment variable
+# for cleanup vmalert rules you can set VICTORIAMETRICS_DOCKER_VMALERT_CLEANUP_CONFIGS=1 environment variable
 victoriametrics_docker_compose_vmalert_rules: {}
 victoriametrics_docker_compose_vmalert_compose_service_params:
   restart: unless-stopped
 victoriametrics_docker_compose_vmalert_environment_params: {}
 victoriametrics_docker_compose_vmalert_ports:
   - "8880:8880"
-victoriametrics_docker_compose_vmalert_rules_path: "{{ victoriametrics_docker_root_folder }}/rules"
+victoriametrics_docker_compose_vmalert_rules_path: "{{ victoriametrics_docker_compose_root_folder }}/rules"
 victoriametrics_docker_compose_vmalert_volumes:
   - "{{ victoriametrics_docker_compose_vmalert_rules_path }}:/etc/alerts"
 victoriametrics_docker_compose_vmalert_notify_url: "http://changethaturl:9093"
-victoriametrics_docker_compose_vmalert_datasource_url: "http://{{ victoriametrics_docker_container_name }}:8428"
-victoriametrics_docker_compose_vmalert_remote_read_url: "http://{{ victoriametrics_docker_container_name }}:8428"
-victoriametrics_docker_compose_vmalert_remote_write_url: "http://{{ victoriametrics_docker_container_name }}:8428"
+victoriametrics_docker_compose_vmalert_datasource_url: "http://{{ victoriametrics_docker_compose_container_name }}:8428"
+victoriametrics_docker_compose_vmalert_remote_read_url: "http://{{ victoriametrics_docker_compose_container_name }}:8428"
+victoriametrics_docker_compose_vmalert_remote_write_url: "http://{{ victoriametrics_docker_compose_container_name }}:8428"
 victoriametrics_docker_compose_vmalert_service_params:
   restart: unless-stopped
 victoriametrics_docker_compose_vmalert_commands:
@@ -52,9 +53,9 @@ victoriametrics_docker_compose_vmalert_commands:
   - "--rule='/etc/alerts/*.yml'"
 victoriametrics_docker_compose_template: |
   services:
-    {{ victoriametrics_docker_container_name }}:
-      image: {{ victoriametrics_docker_image }}:{{ victoriametrics_docker_version }}
-      container_name: {{ victoriametrics_docker_container_name }}
+    {{ victoriametrics_docker_compose_container_name }}:
+      image: {{ victoriametrics_docker_compose_image }}:{{ victoriametrics_docker_compose_version }}
+      container_name: {{ victoriametrics_docker_compose_container_name }}
   {% for k, v in victoriametrics_docker_compose_service_params.items() %}
       {{ k }}: {{ v }}
   {% endfor %}
@@ -79,15 +80,15 @@ victoriametrics_docker_compose_template: |
         - {{ cmd }}
   {% endfor %}
 
-  {% if victoriametrics_docker_vmalert_enabled %}
-    {{ victoriametrics_docker_vmalert_container_name }}:
-      image: {{ victoriametrics_docker_vmalert_image }}:{{ victoriametrics_docker_vmalert_version }}
-      container_name: {{ victoriametrics_docker_vmalert_container_name }}
+  {% if victoriametrics_docker_compose_vmalert_enabled %}
+    {{ victoriametrics_docker_compose_vmalert_container_name }}:
+      image: {{ victoriametrics_docker_compose_vmalert_image }}:{{ victoriametrics_docker_compose_vmalert_version }}
+      container_name: {{ victoriametrics_docker_compose_vmalert_container_name }}
   {% for k, v in victoriametrics_docker_compose_vmalert_service_params.items() %}
       {{ k }}: {{ v }}
   {% endfor %}
       depends_on:
-        - "{{ victoriametrics_docker_container_name }}"
+        - "{{ victoriametrics_docker_compose_container_name }}"
   {% if victoriametrics_docker_compose_vmalert_environment_params.keys() | length > 0 %}
       environment:
   {% for k, v in victoriametrics_docker_compose_vmalert_environment_params.items() %}

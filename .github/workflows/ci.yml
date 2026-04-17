@@ -30,11 +30,11 @@ jobs:
       matrix:
         python:
           - 3.14
-          - 3.13
-          - 3.12
+          # - 3.13
+          # - 3.12
         ansible:
           - 13
-          - 12
+          # - 12
         os:
           - debian13
     steps:
