@@ -39,7 +39,7 @@ Role Variables
 role defaults:
 ```yml
 ---
-victoriametrics_docker_compose_version: 'v1.140.0'
+victoriametrics_docker_compose_version: 'v1.142.0'
 victoriametrics_docker_compose_container_name: victoriametrics
 victoriametrics_docker_compose_root_folder: "/opt/{{ victoriametrics_docker_compose_container_name }}"
 victoriametrics_docker_compose_root_folder_owner: root
@@ -65,7 +65,7 @@ victoriametrics_docker_compose_commands:
 #  - "-promscrape.config=/scrape.yml"
 victoriametrics_docker_compose_vmalert_enabled: true
 victoriametrics_docker_compose_vmalert_container_name: vmalert
-victoriametrics_docker_compose_vmalert_version: "v1.140.0"
+victoriametrics_docker_compose_vmalert_version: "v1.142.0"
 victoriametrics_docker_compose_vmalert_image: victoriametrics/vmalert
 # vmalert rules {{  }} braces should be written as [[ ]] because {{  }} is reserved for jinja
 # templating
