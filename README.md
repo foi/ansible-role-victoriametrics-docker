@@ -2,8 +2,6 @@
 
 Ansible role for deploying victoriametrics (vmalert enabled by default but can be disabled) in docker container. Scraping is optional and disabled by default.
 
-<img src="https://github.com/foi/ansible-role-victoriametrics-docker/actions/workflows/ci.yml/badge.svg?branch=main">
-
 Compatibility
 --------------
 
